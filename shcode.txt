@@ -1,0 +1,258 @@
+Create TABLE Specialist (
+	S_id DECIMAL (24) NOT NULL,
+	S_name VARCHAR (255) NOT NULL,
+	User_name VARCHAR (255),
+	User_id INT NOT NULL,
+	Date_id INT NOT NULL,
+	Constraint pk_spes PRIMARY KEY (S_id),
+	CONSTRAINT fk_us FOREIGN KEY (User_id) REFERENCES Users(User_id),
+	CONSTRAINT fk_time FOREIGN KEY (Date_id) REFERENCES Date(Date_id)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE
+	);
+SELECT * FROM Specialist;
+
+
+
+CREATE TABLE Users(
+User_id DECIMAL (24) NOT NULL ,
+	User_name VARCHAR (255) NOT NULL ,
+User_phone INT NOT NULL ,
+	Gadget_name VARCHAR (255) ,
+	Gadget_id INT NOT NULL,
+CONSTRAINT pk_us PRIMARY KEY (User_id) ,
+	CONSTRAINT fk_gad FOREIGN KEY (Gadget_id) REFERENCES Gadgets(Gadget_id) 
+		ON DELETE CASCADE
+	ON UPDATE CASCADE
+	);
+SELECT*FROM Users;
+
+
+
+Create TABLE Gadgets (
+	Gadget_id DECIMAL (24) NOT NULL,
+	Gadget_name VARCHAR (255) NOT NULL,
+	User_id INT NOT NULL,
+	Access_id INT NOT NULL,
+	CONSTRAINT pk_gad PRIMARY KEY (Gadget_id),
+	CONSTRAINT fk_acs FOREIGN KEY (Access_id) REFERENCES Access(Access_id)
+			ON DELETE CASCADE
+	ON UPDATE CASCADE
+);
+		SELECT * FROM Gadgets;
+
+
+
+CREATE TABLE Date (
+	User_id int not null, 
+	Date_id DECIMAL (24) NOT NULL,
+	Hire_date Date NOT NULL,
+	CONSTRAINT pk_time PRIMARY KEY (Date_id)
+	
+);
+SELECT *FROM Date;
+
+CREATE TABLE Access(
+Access_id DECIMAL (24) NOT NULL,
+	A_category VARCHAR (255) NOT NULL,
+	A_price REAL NOT NULL,
+	Status_id INT NOT NULL,
+	D_id INT NOT NULL,
+	CONSTRAINT pk_acs PRIMARY KEY (Access_id),
+	CONSTRAINT fk_stt FOREIGN KEY (Status_id) REFERENCES Status(Status_id),
+	CONSTRAINT fk_dev FOREIGN KEY (D_id) REFERENCES Device(D_id)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE
+);
+SELECT * FROM Access;
+
+CREATE TABLE Status(
+Status_id DECIMAL (24) NOT NULL,
+	Status_name VARCHAR (255) NOT NULL,
+	CONSTRAINT pk_stt PRIMARY KEY (Status_id) 
+	
+);
+SELECT * FROM Status;
+
+CREATE TABLE Device(
+D_id DECIMAL (24) NOT NULL,
+D_name VARCHAR (255) NOT NULL,
+	CONSTRAINT pk_dev PRIMARY KEY (D_id)
+);
+SELECT * FROM Device;
+
+---------------------------------------------------------------------------------
+4 task
+ALTER TABLE Users RENAME TO Us;
+SELECT * FROM Us;
+
+ALTER TABLE Us ADD column User_lname VARCHAR (255);
+SELECT * FROM Us;
+
+ALTER TABLE Us DROP column User_lname;
+SELECT * FROM Us;
+-----------------------------------------------------------
+5TASK:
+INSERT INTO Specialist VALUES(01,'Jarim25','Karim',101,81),
+(02,'Karim','Daulet',102,82),
+(04,'Sarim','Marat',104,84),
+(03,'Kerim','Ermek',103,83);
+SELECT * FROM Specialist;
+UPDATE Specialist SET S_id = s_id + 10.00 
+WHERE S_name = 'Karim' ;
+SELECT *FROM Specialist;
+DELETE  FROM Specialist WHERE User_id = 104;
+SELECT *FROM Specialist;
+
+
+
+INSERT INTO Us VALUES(101,'Karim',111111,'Iphone6',201),
+(102,'Daulet',555555,'IphoneXS',202),
+(104,'Marat',444444,'OPPO',204),
+(103,'Ermek',666666,'Huaweip20',203);
+SELECT * FROM Us;
+UPDATE Us SET User_phone = 877616
+WHERE User_name = 'Karim';
+SELECT * FROM Us;
+DELETE FROM Us WHERE User_name = 'Daulet';
+SELECT * FROM Us;
+
+INSERT INTO Gadgets VALUES(201,'Iphone6',101,301),
+(202,'IphoneXS',102,302),
+(204,'OPPO',104,304),
+(203,'Huaweip20',103,303);
+SELECT * FROM Gadgets;
+UPDATE Gadgets SET Gadget_name = 'HuaweiP20'
+WHERE Gadget_name = 'Huaweip20';
+SELECT * FROM Gadgets;
+DELETE FROM Gadgets WHERE Gadget_name = 'OPPO';
+SELECT * FROM Gadgets;
+
+Insert INTO Date VALUES(101,81,'2019-12-05'),
+(102,82,'2019-12-05'),
+(104,84,'2019-12-05'),
+(103,83,'2019-12-05');
+SELECT * FROM Date;
+UPDATE Date SET Hire_date = '2019-12-04'
+WHERE User_id = 104;
+SELECT * FROM Date;
+DELETE FROM Date WHERE User_id = 104;
+SELECT * FROM Date;
+
+INSERT INTO Access VALUES(301,'A',20.45  , 401,501),
+(302,'B',15.00 ,402,502),
+(304,'',0 ,404,504),
+(303,'A-',17.55 ,403,503);
+SELECT * FROM Access ;
+UPDATE Access SET A_category = 'F'
+WHERE A_category = '';
+SELECT * FROM Access ;
+DELETE FROM Access WHERE A_category = 'F';
+SELECT * FROM Access ;
+
+INSERT INTO Status VALUES(401,'online'),
+(402,'online'),
+(404,'offline'),
+(403,'online');
+SELECT * FROM Status;
+UPDATE Status SET Status_name = 'work'
+WHERE Status_name = 'online';
+SELECT * FROM Status;
+DELETE FROM Status WHERE Status_name = 'offline';
+SELECT * FROM Status;
+
+INSERT INTO Device VALUES(501,'Climate,cinema,water,doors'),
+(502,'Climate,doors'),
+(504,'-'),
+(503,'Climate,cinema,water');
+SELECT * FROM Device;
+UPDATE Device SET D_name = 'Nothing' 
+WHERE D_name = '-';
+SELECT * FROM Device;
+DELETE FROM Device 
+WHERE D_name = 'Nothing';
+SELECT * FROM Device;
+
+
+--------------------
+8 task
+SELECT User_name , User_id , Gadget_name
+	FROM Us
+	WHERE   EXISTS (SELECT User_name,Gadget_name FROM Specialist WHERE Specialist.User_id = Us.User_id AND User_id >= 102 )
+	ORDER BY User_id;
+	
+	SELECT User_name , User_id , Gadget_name
+	FROM Us
+	WHERE  NOT EXISTS (SELECT User_name,Gadget_name FROM Specialist WHERE Specialist.User_id = Us.User_id AND User_id >= 102 )
+	ORDER BY User_id;
+	
+	
+	SELECT User_name, Gadget_name , User_id 
+	FROM Us
+	WHERE Gadget_name
+	IN ('Iphone6','IphoneXS')
+	ORDER BY User_name;
+	
+	
+	SELECT * FROM Access
+	WHERE A_price >= ALL(SELECT A_price FROM Access);
+	
+	
+	SELECT a_category , a_price
+	FROM Access
+	WHERE a_price >ANY(SELECT a_price FROM Access)
+	ORDER BY a_category;
+
+	
+------------------------------
+7 TASK
+SELECT User_name , User_phone , Gadget_name
+	FROM Us WHERE Gadget_name LIKE '%Iphone%' 
+	ORDER BY User_name ASC,
+	User_name ASC;
+	
+	SELECT max (DISTINCT a_price) AS max_price FROM Access;
+	SELECT min (DISTINCT a_price) AS min_price FROM Access;
+	SELECT avg (DISTINCT a_price) AS avr_price FROM Access;
+	SELECT sum (DISTINCT a_price) AS sum_price FROM Access;
+
+	SELECT User_name, Gadget_name , User_id 
+	FROM Us
+	WHERE Gadget_name
+	IN ('Iphone6','IphoneXS')
+	ORDER BY User_name;
+
+SELECT * FROM Us 
+WHERE 
+
+
+SELECT User_id,Gadget_name
+FROM Us
+Where (User_id Between 103 and 104); 
+
+SELECT User_id,Gadget_name
+FROM Us
+Where User_id >= 102 AND User_id <=105 ; 
+
+SELECT User_name,Gadget_name
+FROM Us
+Where Gadget_id = 202 OR Gadget_id = 204;
+
+
+SELECT * FROM Specialist
+INNER JOIN Us
+ON Specialist.User_id = Us.User_id;
+
+
+SELECT gadget_name, a_category , a_price 
+FROM Access
+LEFT JOIN Gadgets
+ON Gadgets.access_id = Access.access_id;
+
+SELECT * 
+FROM Date
+FULL JOIN Specialist
+ON Date.Date_id = Specialist.Date_id;
+
+	
+	
